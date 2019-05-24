@@ -40,7 +40,7 @@ public class MvcTest {
 	@Test
 	public void testPage() throws Exception {
 		
-		MvcResult result=mockMvc.perform(MockMvcRequestBuilders.get("/emps").param("pn", "1"))
+		MvcResult result=mockMvc.perform(MockMvcRequestBuilders.get("/emps").param("pn", "5"))
 				.andReturn();
 
 		MockHttpServletRequest request = result.getRequest();
