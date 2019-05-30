@@ -38,4 +38,16 @@ public class EmployeeService {
 		return count == 0;
 	}
 
+	public Employee getEmp(Integer id) {
+		// TODO Auto-generated method stub
+		Employee employee=employeeMapper.selectByPrimaryKey(id);
+		return employee;
+	}
+
+	public void updateEmp(Employee employee) {
+		// TODO Auto-generated method stub
+		
+		employeeMapper.updateByPrimaryKeySelective(employee);
+	}
+
 }
