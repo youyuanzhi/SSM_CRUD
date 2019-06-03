@@ -137,7 +137,7 @@
 		<div calss="row">
 			<div class="col-md-4 col-md-offset-8"> 
 				<button class="btn btn-primary" id="emp_add_Modal">新增</button>
-				<button class="btn btn-danger">删除</button>
+				<button class="btn btn-danger" id="emp_delete_all_btn">删除</button>
 			</div>
 		</div>
 		<!--  显示表格数据-->
@@ -146,6 +146,9 @@
 				<table class="table table-hover" id="emps_table">
 					<thead>
 					<tr>
+						<th>
+							<input type="checkbox" id="check_all">
+						</th>
 						<th>#</th>
 						<th>empName</th>
 						<th>gender</th>
@@ -207,6 +210,7 @@
 			$("#emps_table tbody").empty();
 			var emps= result.extend.PageInfo.list;
 			$.each(emps,function(index,item){
+				var checkBoxTd=$("<td><input type='checkbox' class='check_item'/></td>");
 				var empIdTd = $("<td></td>").append(item.empId);
 				var empNameTd = $("<td></td>").append(item.empName);
 				var genderTd = $("<td></td>").append(item.gender=='M'?"男":"女");
@@ -220,9 +224,11 @@
 				
 				var delbtn =$("<button></button>").addClass("btn btn-danger btn-sm delete_btn")
 					.append($("<span></spqn>").addClass("glyphicon glyphicon-trash")).append("删除")
-				
+				delbtn.attr("del-id",item.empId);
 				var btnTd = $("<td></td>").append(editbtn).append(" ").append(delbtn);
-					$("<tr></tr>").append(empIdTd) 
+					$("<tr></tr>")
+				.append(checkBoxTd)
+					.append(empIdTd) 
 				.append(empNameTd)
 				.append(genderTd)
 				.append(emailTd)
@@ -500,7 +506,59 @@
 				 
 		});
 		
+		//单个删除
+		$(document).on("click",".delete_btn",function(){
+			//弹出是否确认删除的对话框
+			var empName= $(this).parents("tr").find("td:eq(2)").text();
+			var empId=$(this).attr("del-id");
+			if(confirm("确认删除【"+empName+"】吗？")){
+				$.ajax({
+					url:"${APP_PATH}/emp/"+empId,
+					type:"DELETE",
+					success:function(result){
+						to_page(currentPage);
+					}
+					
+				})
+			}
+			
+			//alert($(this).parents("tr").find("td:eq(1)").text());
+		});
 		
+		$("#check_all").click(function(){
+			$(".check_item").prop("checked",$(this).prop("checked"));
+		});
+		
+		$(document).on("click",".check_item",function(){
+			var flag =$(".check_item:checked").length==$(".check_item").length;
+			$("#check_all").prop("checked",flag);
+		})
+		
+		
+		$("#emp_delete_all_btn").click(function(){
+			
+			var empNames = "";
+			var del_idstr="";
+			$.each($(".check_item:checked"),function(){
+				empNames +=$(this).parents("tr").find("td:eq(2)").text()+","
+				del_idstr +=$(this).parents("tr").find("td:eq(1)").text()+"-"
+			});
+			
+			empNames=empNames.substring(0,empNames.length-1);
+			del_idstr=del_idstr.substring(0,del_idstr.length-1);
+			if(confirm("确认删除【"+empNames+"】吗？")){
+				
+				$.ajax({
+					url:"${APP_PATH}/emp/"+del_idstr,
+					type:"DELETE",
+					success:function(result){
+						alert(result.msg);
+						
+						to_page(currentPage);
+					}
+				})
+			}
+		})
 	</script>
 </body>
 </html>

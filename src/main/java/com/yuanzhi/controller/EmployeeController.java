@@ -2,6 +2,7 @@ package com.yuanzhi.controller;
 
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,27 @@ public class EmployeeController {
 
 	@Autowired
 	EmployeeService employeeService;
+	
+	@ResponseBody
+	@RequestMapping(value="/emp/{ids}",method=RequestMethod.DELETE)
+	public Msg deleteEmpById(@PathVariable("ids")String ids) {
+		if(ids.contains("-")) {
+			
+			List<Integer> del_ids=new ArrayList<>();
+			String[] str_ids = ids.split("-");
+			
+			for(String string : str_ids) {
+				del_ids.add(Integer.parseInt(string));
+			}
+			employeeService.deleteBatch(del_ids);
+		}else {
+			Integer id=Integer.parseInt(ids);
+			employeeService.deleteEmp(id); 
+			
+		}
+		return Msg.success();
+	}
+	
 	
 	@ResponseBody
 	@RequestMapping(value="/emp/{empId}",method=RequestMethod.PUT)
